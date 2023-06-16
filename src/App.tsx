@@ -173,13 +173,8 @@ function App() {
   const handleInputChange = useCallback(
     (setter: React.Dispatch<React.SetStateAction<number>>) =>
       (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value === "") {
-          setter(e.target.value); // TODO: fix types
-        }
         const value = parseInt(e.target.value);
-        if (!isNaN(value)) {
-          setter(value);
-        }
+        setter(value);
       },
     []
   );
