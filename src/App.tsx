@@ -5,34 +5,51 @@ import "./App.css";
 const MAX_LEVEL = 66;
 const dailyPower = 240;
 
-function App() {
-  const [currentLevel, setCurrentLevel] = useState<number>(1);
-  const [goalLevel, setGoalLevel] = useState<number>(MAX_LEVEL);
-  const [currentExp, setCurrentExp] = useState<number>(0);
-  const [refillsPerDay, setRefillsPerDay] = useState<number>(0);
-  const [weeklyImmersifiers, setWeeklyImmersifiers] = useState<number>(4);
-  const [fuels, setFuels] = useState<number>(0);
-  const [error, setError] = useState<string>("");
+const initialValues = {
+  currentLevel: 1,
+  goalLevel: MAX_LEVEL,
+  currentExp: 0,
+  refillsPerDay: 0,
+  weeklyImmersifiers: 4,
+  fuels: 0,
+};
 
-  useEffect(() => {
+function App() {
+  const [currentLevel, setCurrentLevel] = useState<number>((): number => {
     const data = localStorage.getItem("levelCalcData");
     if (data) {
-      const {
-        currentLevel: savedCurrentLevel,
-        goalLevel: savedGoalLevel,
-        currentExp: savedCurrentExp,
-        refillsPerDay: savedRefillsPerDay,
-        weeklyImmersifiers: savedWeeklyImmersifiers,
-        fuels: savedFuels,
-      } = JSON.parse(data);
-      setCurrentLevel(savedCurrentLevel);
-      setGoalLevel(savedGoalLevel);
-      setCurrentExp(savedCurrentExp);
-      setRefillsPerDay(savedRefillsPerDay);
-      setWeeklyImmersifiers(savedWeeklyImmersifiers);
-      setFuels(savedFuels);
+      const temp = JSON.parse(data);
+      return temp.currentLevel;
+    } else {
+      return initialValues.currentLevel;
     }
-  }, []);
+  });
+  const [goalLevel, setGoalLevel] = useState<number>((): number => {
+    const data = localStorage.getItem("levelCalcData");
+    if (data) {
+      const temp = JSON.parse(data);
+      return temp.goalLevel;
+    } else {
+      return initialValues.goalLevel;
+    }
+  });
+  const [currentExp, setCurrentExp] = useState<number>((): number => {
+    const data = localStorage.getItem("levelCalcData");
+    if (data) {
+      const temp = JSON.parse(data);
+      return temp.currentExp;
+    } else {
+      return initialValues.currentExp;
+    }
+  });
+  const [refillsPerDay, setRefillsPerDay] = useState<number>(
+    initialValues.refillsPerDay
+  );
+  const [weeklyImmersifiers, setWeeklyImmersifiers] = useState<number>(
+    initialValues.weeklyImmersifiers
+  );
+  const [fuels, setFuels] = useState<number>(initialValues.fuels);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     localStorage.setItem(
@@ -113,13 +130,17 @@ function App() {
     if (!validateFields()) {
       return 0;
     }
+
+    const totalExpReq = totalExpRequired(currentLevel, goalLevel, currentExp);
+    const expFromFuels = ((fuels * 60) / 10) * 50;
+    const expFromDailies = dailyExpTotal(currentLevel);
+    const expFromRefills = ((refillsPerDay * 60) / 10) * 50;
+    const expFromImmersifiers = ((weeklyImmersifiers * 40) / 10) * 50;
+
     const daysRequired =
       1 +
-      (totalExpRequired(currentLevel, goalLevel, currentExp) -
-        ((fuels * 60) / 10) * 50) /
-        (dailyExpTotal(currentLevel) +
-          ((refillsPerDay * 60) / 10) * 50 +
-          (((weeklyImmersifiers * 40) / 10) * 50) / 7);
+      (totalExpReq - expFromFuels) /
+        (expFromDailies + expFromRefills + expFromImmersifiers / 7);
 
     return Number(daysRequired.toFixed(2) as unknown as number);
   }, [
@@ -146,18 +167,17 @@ function App() {
     if (jadeTotalCostPerDay === undefined) {
       return 0;
     }
-    return calculateDaysRequired() * jadeTotalCostPerDay;
+    return Math.round(calculateDaysRequired() * jadeTotalCostPerDay);
   }, [calculateDaysRequired, jadeTotalCostPerDay]);
 
   const handleInputChange = useCallback(
     (setter: React.Dispatch<React.SetStateAction<number>>) =>
       (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value === "") {
-          setter(e.target.value);
+          setter(e.target.value); // TODO: fix types
         }
         const value = parseInt(e.target.value);
         if (!isNaN(value)) {
-          // Check if value is a valid number
           setter(value);
         }
       },
@@ -169,36 +189,44 @@ function App() {
   }, [days]);
 
   return (
-    <div className="p-6 max-w-sm mx-auto font-sans antialiased">
-      <div className="  ">
-        <label>
-          Current Level:
-          <input
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            type="number"
-            min={1}
-            max={goalLevel}
-            value={currentLevel}
-            onChange={handleInputChange(setCurrentLevel)}
-          />
-        </label>
-        <br />
-        <label>
-          Goal Level:
-          <input
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            type="number"
-            min={1}
-            max={MAX_LEVEL}
-            value={goalLevel}
-            onChange={handleInputChange(setGoalLevel)}
-          />
-        </label>
-        <br />
-        <label>
+    <div className="p-6 max-w-lg mx-auto font-sans antialiased">
+      <p className="mt-0">
+        Note that the current known experience ends at rank 66
+      </p>
+      <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+      <div className="">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Current Level:
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                type="number"
+                min={1}
+                max={goalLevel}
+                value={currentLevel}
+                onChange={handleInputChange(setCurrentLevel)}
+              />
+            </label>
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Goal Level:
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                type="number"
+                min={1}
+                max={MAX_LEVEL}
+                value={goalLevel}
+                onChange={handleInputChange(setGoalLevel)}
+              />
+            </label>
+          </div>
+        </div>
+        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Current EXP:
           <input
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             type="number"
             value={currentExp}
             min={0}
@@ -206,10 +234,10 @@ function App() {
           />
         </label>
         <br />
-        <label>
+        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Refills per Day:
           <input
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             type="number"
             value={refillsPerDay}
             min={0}
@@ -218,10 +246,10 @@ function App() {
           />
         </label>
         <br />
-        <label>
+        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Weekly Immersifiers:
           <input
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             type="number"
             value={weeklyImmersifiers}
             min={0}
@@ -229,10 +257,10 @@ function App() {
             onChange={handleInputChange(setWeeklyImmersifiers)}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Fuels:
           <input
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             type="number"
             value={fuels}
             min={0}
@@ -240,29 +268,78 @@ function App() {
           />
         </label>
       </div>
+      <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
       {error && (
         <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4"
+          className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
           role="alert"
         >
-          <span className="block sm:inline">{error}</span>
+          <span className="font-medium">{error}</span>
         </div>
       )}
       {!error && (
         <>
           <div className="mt-4">
-            Expected Finish Date is: <strong>{date()}</strong> or{" "}
+            Projection target date is: <strong>{date()}</strong> or{" "}
             <strong>{days}</strong> day(s)
           </div>
           {refillsPerDay > 0 && (
             <div className="mt-4">
-              Stellar Jade Refill Cost: {jadeTotalCostPerDay}
-              <br />
-              Total: {goalStellarJadeCost}
+              <p>
+                Stellar Jade Refill Cost: <strong>{jadeTotalCostPerDay}</strong>
+              </p>
+              <p>
+                Goal Stellar Jade Cost: <strong>{goalStellarJadeCost}</strong>{" "}
+                or <strong>{Math.ceil(goalStellarJadeCost / 160)}</strong>{" "}
+                pulls.
+              </p>
             </div>
           )}
         </>
       )}
+      <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+      <div className="flex flex-col space-y-4">
+        <a
+          href="https://www.reddit.com/r/HonkaiStarRail/comments/13gsz60/honkai_star_rail_trailblazer_level_exp_calculator/"
+          className="inline-flex items-center justify-center p-5 text-base font-medium text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+        >
+          <span className="w-full">
+            Inspired by Honkai: Star Rail Sheet from Starriilite
+          </span>
+          <svg
+            aria-hidden="true"
+            className="w-6 h-6 ml-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </a>
+        <a
+          href="https://honkai-star-rail.fandom.com/wiki/Honkai:_Star_Rail_Wiki"
+          className="inline-flex items-center justify-center p-5 text-base font-medium text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+        >
+          <span className="w-full">Data from Honkai: Star Rail Wiki</span>
+          <svg
+            aria-hidden="true"
+            className="w-6 h-6 ml-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </a>
+      </div>
     </div>
   );
 }
