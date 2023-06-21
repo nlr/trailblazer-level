@@ -71,7 +71,7 @@ export const levels: {
   64: { exp: 24970, totalExp: 291650, equilibriumLevel: 5 },
   65: { exp: 26630, totalExp: 318280, equilibriumLevel: 6 },
   66: { exp: 65070, totalExp: 383350, equilibriumLevel: 6 },
-  //   67: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
+  67: { exp: 68810, totalExp: 452160, equilibriumLevel: 6 },
   //   68: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
   //   69: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
   //   70: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
@@ -106,72 +106,8 @@ export const powerRefill: PowerRefill = {
   8: { jadeCost: 200, totalCost: 900 },
 };
 
-class Calculator {
-  readonly dailyPower = 240;
-
-  currentLevel: number;
-  goalLevel: number;
-  currentExp: number;
-  refillPerDay: number;
-  weeklyImmersifiers: number;
-  fuels: number;
-
-  constructor(
-    currentLevel = 1,
-    goalLevel = 70,
-    currentExp = 0,
-    refillPerDay = 0,
-    weeklyImmersifiers = 4,
-    fuels = 0
-  ) {
-    this.currentLevel = currentLevel;
-    this.goalLevel = goalLevel;
-    this.currentExp = currentExp;
-    this.refillPerDay = refillPerDay;
-    this.weeklyImmersifiers = weeklyImmersifiers;
-    this.fuels = fuels;
-  }
-  getCurrentDailyTrainingExp(): number {
-    return dailyActivityExp.get(this.getCurrentEqualibriumLevel()) as number;
-  }
-
-  getDailyExpTotal(): number {
-    return (this.dailyPower / 10) * 50 + this.getCurrentDailyTrainingExp() * 5;
-  }
-
-  getCurrentEqualibriumLevel(): number {
-    return levels[this.currentLevel].equilibriumLevel;
-  }
-  getTotalExpRequired(): number {
-    if (levels[this.goalLevel] && levels[this.currentLevel]) {
-      return (
-        levels[this.goalLevel].totalExp -
-        levels[this.currentLevel].totalExp -
-        this.currentExp
-      );
-    }
-    return 0;
-  }
-  getExpectedFinishDate(): string {
-    const expRequired = this.getTotalExpRequired();
-    const dailyExpTotal = this.getDailyExpTotal();
-    const daysRequired =
-      1 +
-      (expRequired - ((this.fuels * 60) / 10) * 50) /
-        (dailyExpTotal +
-          ((this.refillPerDay * 60) / 10) * 50 +
-          (((this.weeklyImmersifiers * 40) / 10) * 50) / 7);
-
-    const expectedFinishDate = getDateAfter(daysRequired);
-
-    return `${expectedFinishDate} or ${daysRequired.toFixed(1)} Day(s)`;
-  }
-}
-
 export function getDateAfter(days: number): string {
   const today = new Date();
   today.setDate(today.getDate() + days);
   return today.toLocaleDateString();
 }
-
-export default Calculator;
