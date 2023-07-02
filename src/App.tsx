@@ -3,7 +3,7 @@ import { levels, dailyActivityExp, powerRefill, getDateAfter } from "./calc";
 import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 
-const MAX_LEVEL = 67;
+const MAX_LEVEL = 68;
 const dailyPower = 240;
 
 const initialValues = {
