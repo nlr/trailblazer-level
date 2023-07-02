@@ -72,7 +72,7 @@ export const levels: {
   65: { exp: 26630, totalExp: 318280, equilibriumLevel: 6 },
   66: { exp: 65070, totalExp: 383350, equilibriumLevel: 6 },
   67: { exp: 68810, totalExp: 452160, equilibriumLevel: 6 },
-  //   68: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
+  68: { exp: 72490, totalExp: 524650, equilibriumLevel: 6 },
   //   69: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
   //   70: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
 };
