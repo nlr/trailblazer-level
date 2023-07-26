@@ -187,7 +187,6 @@ function App() {
   return (
     <>
       <div className="p-6 max-w-lg mx-auto font-sans antialiased">
-        <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700"></hr>
         <div className="">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
