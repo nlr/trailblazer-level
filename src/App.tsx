@@ -3,7 +3,7 @@ import { levels, dailyActivityExp, powerRefill, getDateAfter } from "./calc";
 import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 
-const MAX_LEVEL = 69;
+const MAX_LEVEL = 70;
 const dailyPower = 240;
 
 const initialValues = {
@@ -187,9 +187,6 @@ function App() {
   return (
     <>
       <div className="p-6 max-w-lg mx-auto font-sans antialiased">
-        <p className="mt-0">
-          Note that the current known experience ends at rank {MAX_LEVEL}
-        </p>
         <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700"></hr>
         <div className="">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
