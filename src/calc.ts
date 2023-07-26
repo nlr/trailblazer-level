@@ -74,7 +74,7 @@ export const levels: {
   67: { exp: 68810, totalExp: 452160, equilibriumLevel: 6 },
   68: { exp: 72490, totalExp: 524650, equilibriumLevel: 6 },
   69: { exp: 76120, totalExp: 600770, equilibriumLevel: 6 },
-  //   70: { exp: 0, totalExp: 0, equilibriumLevel: 6 },
+  70: { exp: 79710, totalExp: 680480, equilibriumLevel: 6 },
 };
 
 type ActivityExp = number;
