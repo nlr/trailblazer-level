@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 import { levels, dailyActivityExp, powerRefill, getDateAfter } from "./calc";
 import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
+import { QrCodeAccordion } from "./QrCodeAccordion";
 
 const MAX_LEVEL = 70;
 const dailyPower = 240;
@@ -298,15 +299,14 @@ function App() {
           </>
         )}
         <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+
         <div className="flex flex-col space-y-4">
           <a
-            href="https://www.reddit.com/r/HonkaiStarRail/comments/13gsz60/honkai_star_rail_trailblazer_level_exp_calculator/"
+            href="htt ps://github.com/nlr/trailblazer-level/issues"
             target="_blank"
             className="inline-flex items-center justify-center p-5 text-base font-medium text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
           >
-            <span className="w-full">
-              Inspired by Honkai: Star Rail Sheet from Starriilite
-            </span>
+            <span className="w-full">Report a Bug or Share an Idea</span>
             <svg
               aria-hidden="true"
               className="w-6 h-6 ml-3"
@@ -315,9 +315,9 @@ function App() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                clip-rule="evenodd"
+                clipRule="evenodd"
               ></path>
             </svg>
           </a>
@@ -335,13 +335,14 @@ function App() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                clip-rule="evenodd"
+                clipRule="evenodd"
               ></path>
             </svg>
           </a>
         </div>
+        <QrCodeAccordion />
       </div>
       <Analytics />
     </>
