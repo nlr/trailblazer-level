@@ -29,15 +29,15 @@ export const QrCodeAccordion: React.FC = () => {
           className={`${isQrCodeOpen ? "block" : "hidden"} text-center`}
         >
           <img className="my-2 rounded-lg" src="/qr.png" />
-          <div>
-            {address}{" "}
-            <button
-              onClick={copyToClipboard}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              {isCopied ? "Copied!" : "Copy Address"}
-            </button>
+          <div className="flex flex-col">
+            <span className="break-words">{address}</span>
           </div>
+          <button
+            onClick={copyToClipboard}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            {isCopied ? "Copied!" : "Copy Address"}
+          </button>
           <div>
             <span className="text-sm text-gray-500">I accept Toncoin</span>
           </div>
