@@ -22,7 +22,7 @@ export const QrCodeAccordion: React.FC = () => {
           return (
             <div
               key={index}
-              className="flex flex-col bg-gray-50 -mt-1 pt-1 pb-1"
+              className="flex flex-col bg-gray-50 -mt-1 pt-1 pb-1 dark:text-gray-400 dark:bg-gray-800"
             >
               <p>{currency.toUpperCase()}:</p>
               <p className="break-words p-2">{value}</p>
