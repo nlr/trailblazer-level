@@ -1,15 +1,36 @@
 import { useState } from "react";
 export const QrCodeAccordion: React.FC = () => {
   const [isQrCodeOpen, setIsQrCodeOpen] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
 
-  const address = "EQD0JzxoU4J5VlnPkUVKKL7SHTKmmA1YRA31vbCvydKXrZGD";
+  const AddressList = () => {
+    type Address = {
+      [key: string]: string;
+    };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(address).then(() => {
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-    });
+    const addresses: Address[] = [
+      { btc: "bc1qdln58ccjakaxjecuvf87mhuhaew4qq064e3rnc" },
+      { eth: "0x30442505D1EAA92A984047Ba13F77CB22ACbD149" },
+      { ton: "EQD0JzxoU4J5VlnPkUVKKL7SHTKmmA1YRA31vbCvydKXrZGD" },
+    ];
+
+    return (
+      <div>
+        {addresses.map((address, index) => {
+          const currency = Object.keys(address)[0];
+          const value = address[currency];
+
+          return (
+            <div
+              key={index}
+              className="flex flex-col bg-gray-50 -mt-1 pt-1 pb-1"
+            >
+              <p>{currency.toUpperCase()}:</p>
+              <p className="break-words p-2">{value}</p>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
@@ -28,19 +49,7 @@ export const QrCodeAccordion: React.FC = () => {
           id="accordion-collapse-body-1"
           className={`${isQrCodeOpen ? "block" : "hidden"} text-center`}
         >
-          <img className="my-2 rounded-lg" src="/qr.png" />
-          <div className="flex flex-col">
-            <span className="break-words">{address}</span>
-          </div>
-          <button
-            onClick={copyToClipboard}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            {isCopied ? "Copied!" : "Copy Address"}
-          </button>
-          <div>
-            <span className="text-sm text-gray-500">I accept Toncoin</span>
-          </div>
+          <AddressList />
         </div>
       </div>
     </div>
