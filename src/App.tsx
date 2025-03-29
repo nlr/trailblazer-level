@@ -142,7 +142,7 @@ function App() {
     const daysRequired =
       1 +
       (totalExpReq - expFromFuels) /
-        (expFromDailies + expFromRefills + expFromImmersifiers / 7);
+      (expFromDailies + expFromRefills + expFromImmersifiers / 7);
 
     return Number(daysRequired.toFixed(2) as unknown as number);
   }, [
